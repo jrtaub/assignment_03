@@ -1,6 +1,1 @@
-Write your reflection here.
-
-See reflection.md for what makes a good reflection — be specific, use the
-terminology from this assignment (rerun, widget, return value, guard, bytes vs.
-text, decode, session state, initialise once, button-triggered, metric), and make
-it actionable.
+Overall, I had an easier time with this lab than I did with the last one, although some parts were definitely more challenging than others. I was able to complete one_package.py with very little additional help because I understood how to use the Streamlit widgets and the provided functions. However, process_file.py was a little more difficult, and process_files.py was by far the most challenging because I struggled to understand how to use st.session_state to keep track of previously processed files. I learned that Streamlit reruns the entire script after every interaction, so session state is necessary to prevent variables from resetting. Another thing I struggled with was getting the application to open in my browser because I initially did not realize I needed to run the Streamlit command in the terminal. Once I figured that out, I had a much easier time testing my code and seeing how the application worked. Moving forward, I want to practice using session state and become more comfortable running and debugging Streamlit applications on my own.
