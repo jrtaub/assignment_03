@@ -51,6 +51,8 @@ FRUIT_JSON = [
 @pytest.fixture(autouse=True)
 def clean_json_outputs():
     """The apps write data/*.json; start and finish each test without any."""
+    os.makedirs("data", exist_ok=True)
+
     def remove_outputs():
         for name in os.listdir("data"):
             if name.endswith(".json"):

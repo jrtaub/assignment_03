@@ -38,3 +38,60 @@ Test it: pytest tests/test_streamlit.py -k process_files
 # README Step 7 names the two traps. The tests are built around them: choosing a
 # file without clicking must change nothing, and a rerun with the same file still
 # chosen must not count it again.
+import streamlit as st
+import json
+import os
+from packaging_parser import calc_total_units, get_unit, parse_packaging    
+
+st.title("Process Package Files")
+
+# Initialize session state only once
+st.session_state.setdefault("files_processed", 0)
+st.session_state.setdefault("packages_processed", 0)
+st.session_state.setdefault("file_summaries", [])
+
+uploaded_file = st.file_uploader("Upload a package description file", type=["txt"], key="package_file")
+
+process_clicked = st.button("Process file", key="process")
+
+# Optional: Reset button to clear stats and summaries
+if st.button("Reset all"):
+    st.session_state["files_processed"] = 0
+    st.session_state["packages_processed"] = 0
+    st.session_state["file_summaries"] = []
+
+if process_clicked and uploaded_file is not None:
+    # Decode and split lines from uploaded bytes
+    content = uploaded_file.read().decode("utf-8")
+    lines = content.splitlines()
+
+    parsed_packages = []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        parsed = parse_packaging(line)
+        parsed_packages.append(parsed)
+
+    # Prepare output JSON path
+    filename = uploaded_file.name.replace(".txt", ".json")
+    output_path = f"data/{filename}"
+    os.makedirs("data", exist_ok=True)
+
+    with open(output_path, "w") as f:
+        json.dump(parsed_packages, f, indent=2)
+
+    # Update session state totals and summaries
+    st.session_state["files_processed"] += 1
+    st.session_state["packages_processed"] += len(parsed_packages)
+    summary_line = f"{len(parsed_packages)} packages written to {output_path}"
+    st.session_state["file_summaries"].append(summary_line)
+
+# Show metrics side by side
+col1, col2 = st.columns(2)
+col1.metric("Files processed", st.session_state["files_processed"])
+col2.metric("Packages processed", st.session_state["packages_processed"])
+
+# Show all summary lines (one per file processed)
+for summary in st.session_state["file_summaries"]:
+    st.info(summary)
